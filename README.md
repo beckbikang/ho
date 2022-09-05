@@ -1,2 +1,7 @@
 # ho
-i need a server to write mc into kafka
+
+features
+- write data into  kafka which use  mc protocol
+
+
+
