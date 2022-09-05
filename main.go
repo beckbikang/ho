@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"ho/cmd"
+	"log"
+)
 
 func main() {
-	fmt.Println("start")
+	err := cmd.Execute()
+	if err != nil {
+		log.Fatalf("cmd.Execute err: %v", err)
+	}
 }
