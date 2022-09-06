@@ -2,7 +2,6 @@ package logger
 
 import (
 	"os"
-	"sync"
 	"time"
 
 	"go.uber.org/zap"
@@ -66,7 +65,6 @@ type LogConfig struct {
 
 type Logger struct {
 	zlogs     *zap.Logger
-	once      sync.Once
 	logConfig *LogConfig
 }
 
