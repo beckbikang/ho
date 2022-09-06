@@ -107,15 +107,33 @@ func (l *Logger) initLogger() {
 	caller := zap.AddCaller()
 	zapOptions = append(zapOptions, caller)
 
-	if l.logConfig.IsDev {
-		//add file and line
-		development := zap.Development()
-		zapOptions = append(zapOptions, development)
-	}
+	development := zap.Development()
+	zapOptions = append(zapOptions, development)
+
 	filed := zap.Fields(zap.String(SERVER_NAME, l.logConfig.ServerName))
 
 	zapOptions = append(zapOptions, filed)
 	l.zlogs = zap.New(core, zapOptions...)
+}
+func (l *Logger) Debug(msg string, fields ...zap.Field) {
+	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
+	writerSlice = append(writerSlice, fields...)
+	l.zlogs.Debug(msg, writerSlice...)
+}
+func (l *Logger) Info(msg string, fields ...zap.Field) {
+	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
+	writerSlice = append(writerSlice, fields...)
+	l.zlogs.Info(msg, writerSlice...)
+}
+func (l *Logger) Warn(msg string, fields ...zap.Field) {
+	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
+	writerSlice = append(writerSlice, fields...)
+	l.zlogs.Warn(msg, writerSlice...)
+}
+func (l *Logger) Error(msg string, fields ...zap.Field) {
+	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
+	writerSlice = append(writerSlice, fields...)
+	l.zlogs.Error(msg, writerSlice...)
 }
 
 func (l *Logger) setDefaultConfig() {
