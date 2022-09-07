@@ -9,6 +9,14 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+var (
+	pid int
+)
+
+func init() {
+	pid = os.Getpid()
+}
+
 const (
 	TIMEFORMAT = "2006-01-02 15-04-05.000"
 )
@@ -25,7 +33,6 @@ const (
 	CALLER_KEY      = "line"
 	MESSAGE_KEY     = "data"
 	STACK_TRACE_KEY = "stacktrace"
-	SERVER_NAME     = "server"
 )
 
 // format
@@ -51,7 +58,6 @@ type LogKeyConfig struct {
 	CallerKey     string `toml:"callerkey"`
 	MessageKey    string `toml:"messagekey"`
 	StacktraceKey string `toml:"stacktracekey"`
-	ServerName    string `toml:serverName"`
 
 	Level  string `toml:"level"`
 	IsDev  bool   `toml:"isdev"`
@@ -108,9 +114,9 @@ func (l *Logger) initLogger() {
 	development := zap.Development()
 	zapOptions = append(zapOptions, development)
 
-	filed := zap.Fields(zap.String(SERVER_NAME, l.logConfig.ServerName))
+	fields := zap.Fields(zap.Int("pid", pid))
 
-	zapOptions = append(zapOptions, filed)
+	zapOptions = append(zapOptions, fields)
 	l.zlogs = zap.New(core, zapOptions...)
 }
 func (l *Logger) Debug(msg string, fields ...zap.Field) {
@@ -119,17 +125,17 @@ func (l *Logger) Debug(msg string, fields ...zap.Field) {
 	l.zlogs.Debug(msg, writerSlice...)
 }
 func (l *Logger) Info(msg string, fields ...zap.Field) {
-	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
+	writerSlice := []zap.Field{zap.Field(zap.String("level", "info"))}
 	writerSlice = append(writerSlice, fields...)
 	l.zlogs.Info(msg, writerSlice...)
 }
 func (l *Logger) Warn(msg string, fields ...zap.Field) {
-	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
+	writerSlice := []zap.Field{zap.Field(zap.String("level", "warn"))}
 	writerSlice = append(writerSlice, fields...)
 	l.zlogs.Warn(msg, writerSlice...)
 }
 func (l *Logger) Error(msg string, fields ...zap.Field) {
-	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
+	writerSlice := []zap.Field{zap.Field(zap.String("level", "error"))}
 	writerSlice = append(writerSlice, fields...)
 	l.zlogs.Error(msg, writerSlice...)
 }
