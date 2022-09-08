@@ -1,7 +1,12 @@
 package cmd
 
 import (
+	"ho/pkg/global"
+	"ho/pkg/memcache"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/spf13/cobra"
 )
@@ -15,13 +20,40 @@ var mcCmd = &cobra.Command{
 
 var mcKafkaCmd = &cobra.Command{
 	Use:   "kafka",
-	Short: "获取当前时间",
-	Long:  "获取当前时间",
+	Short: "配置文件",
+	Long:  "配置文件地址",
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("mc to kafka")
+		log.Println("configFilePath:" + configFilePath + " configFileName:" + configFileName)
+		//init config
+		global.InitConfig(configFilePath, configFileName)
+
+		//init server
+		mcServer := memcache.GetMemcacheServer()
+		mcServer.Start()
+
+		//sign
+		signChan := make(chan os.Signal, 1)
+		signal.Notify(signChan, syscall.SIGINT, syscall.SIGTERM)
+
+		//wait
+		for {
+			select {
+			case <-signChan: //stop sign
+				global.LOGGER.Info("end")
+				mcServer.Stop()
+				return
+			}
+		}
+
 	},
 }
 
+var configFilePath string
+var configFileName string
+
 func init() {
 	mcCmd.AddCommand(mcKafkaCmd)
+	mcKafkaCmd.Flags().StringVarP(&configFilePath, "path", "p", "", `配置文件路径`)
+	mcKafkaCmd.Flags().StringVarP(&configFileName, "filename", "f", "", `配置文件名称`)
 }

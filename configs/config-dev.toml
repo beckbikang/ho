@@ -1,0 +1,13 @@
+title="ho"
+[main]
+ServerIp="127.0.0.1"
+ServerPort=9191
+MainLogPath="/tmp/ho.log"
+[kafkas]
+    [kafkas.bridgeWrite]
+    brockers=""
+    topic="common_test"
+    group=""
+    user="adBusiness"
+    password=""
+    fromBeginning=false
