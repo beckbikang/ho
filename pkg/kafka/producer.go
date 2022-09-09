@@ -16,6 +16,7 @@ package kafka
 
 import (
 	"errors"
+	"ho/pkg/global"
 	"sync"
 	"time"
 
@@ -37,9 +38,9 @@ type RecordMetadata struct {
 }
 
 type Producer struct {
-	client sarama.AsyncProducer
-	opt    Options
-	//logger  *log.NgoLogger
+	client  sarama.AsyncProducer
+	opt     Options
+	logger  *logger
 	runChan chan struct{}
 	wg      sync.WaitGroup
 }
@@ -139,7 +140,7 @@ func (p *Producer) receiveError() {
 
 // handle 处理异步消息的发送结果
 func (p *Producer) handle(msg *sarama.ProducerMessage, err error) {
-	//log.Tracef("receive send response %+v, error %v", msg, err)
+	p.logger.Sugar().Infof("receive send response %+v, error %v", msg, err)
 	meta := msg.Metadata.(*metaData)
 	if meta.resChan != nil {
 		meta.resChan <- err
@@ -184,8 +185,8 @@ func NewProducer(opt *Options) (*Producer, error) {
 	}
 
 	producer := &Producer{
-		client: p,
-		//logger:  log.WithField("kafka", opt.Name),
+		client:  p,
+		logger:  NewLoggerWrapper(global.LOGGER),
 		opt:     *opt,
 		runChan: make(chan struct{}),
 	}
@@ -206,6 +207,11 @@ func newProducerConfig(opt *Options) (*sarama.Config, error) {
 	config.Net.DialTimeout = opt.DialTimeout
 	config.Net.ReadTimeout = opt.ReadTimeout
 	config.Net.WriteTimeout = opt.WriteTimeout
+
+	//sasl认证
+	config.Net.SASL.Enable = opt.SASLEnable
+	config.Net.SASL.User = opt.SASLUser
+	config.Net.SASL.Password = opt.SASLPassword
 
 	config.Metadata.Retry.Max = opt.Metadata.Retries
 	config.Metadata.Timeout = opt.Metadata.Timeout

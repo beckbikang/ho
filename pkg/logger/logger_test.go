@@ -17,6 +17,8 @@ func TestDebug(t *testing.T) {
 	logger.GetZlog().Info("abc", zap.Int("int", 11))
 
 	logger.GetZlog().Info("test122131")
+
+	logger.zlogs.Sugar().Info("ttttt")
 }
 
 // go test -bench=. -v

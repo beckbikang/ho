@@ -168,12 +168,12 @@ func (l *Logger) getZapEncoderConfig() zapcore.EncoderConfig {
 		CallerKey:      l.logConfig.CallerKey,
 		MessageKey:     l.logConfig.MessageKey,
 		StacktraceKey:  l.logConfig.StacktraceKey,
-		LineEnding:     zapcore.DefaultLineEnding,
+		LineEnding:     zapcore.DefaultLineEnding,      //最后结尾
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,  // 小写编码器
 		EncodeTime:     currentTimeEncoder,             // ISO8601 UTC 时间格式
-		EncodeDuration: zapcore.SecondsDurationEncoder, //
+		EncodeDuration: zapcore.SecondsDurationEncoder, // 时间编码器
 		EncodeCaller:   zapcore.FullCallerEncoder,      // 全路径编码器
-		EncodeName:     zapcore.FullNameEncoder,
+		EncodeName:     zapcore.FullNameEncoder,        //函数编码
 	}
 }
 

@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"ho/pkg/global"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -37,8 +38,8 @@ type Listener interface {
 
 // Consumer 是一个group的消费者
 type Consumer struct {
-	client sarama.ConsumerGroup
-	//logger    *global.LOGGER
+	client    sarama.ConsumerGroup
+	logger    *logger
 	opt       Options
 	ctx       context.Context
 	cancel    func()
@@ -74,8 +75,8 @@ func (c *Consumer) Start() {
 	h := &consumerHandler{
 		consumer: c,
 		ready:    make(chan struct{}),
-		//logger:   c.logger,
-		opt: &c.opt,
+		logger:   c.logger,
+		opt:      &c.opt,
 	}
 	c.ctx, c.cancel = context.WithCancel(context.Background())
 	c.runChan = make(chan struct{})
@@ -89,7 +90,7 @@ func (c *Consumer) Start() {
 		for {
 			// 当服务的rebalance后会返回
 			if err := c.client.Consume(c.ctx, topics, h); err != nil {
-				log.Errorf("kafka consume failed: %s", err.Error())
+				global.LOGGER.Sugar().Errorf("kafka consume failed: %s", err.Error())
 				time.Sleep(time.Millisecond * 200) // 睡眠防止异常之后死循环占满CPU
 			}
 
@@ -105,7 +106,7 @@ func (c *Consumer) Start() {
 		}
 	}()
 	<-h.ready
-	//c.logger.Info("consumer up and running")
+	c.logger.Info("consumer up and running")
 }
 
 // Stop 停止后台消费任务
@@ -127,12 +128,8 @@ func NewConsumer(opt *Options) (*Consumer, error) {
 		return nil, err
 	}
 	return &Consumer{
-		client: c,
-		/*
-			logger: log.WithFields(
-				"kafka", opt.Name,
-				"group", opt.Consumer.Group,
-			),*/
+		client:    c,
+		logger:    NewLoggerWrapper(global.LOGGER),
 		opt:       *opt,
 		listeners: make(map[string]Listener, 8),
 	}, nil
@@ -156,6 +153,11 @@ func newConsumerConfig(opt *Options) (*sarama.Config, error) {
 	config.Metadata.Retry.Max = opt.Metadata.Retries
 	config.Metadata.Timeout = opt.Metadata.Timeout
 
+	//sasl认证
+	config.Net.SASL.Enable = opt.SASLEnable
+	config.Net.SASL.User = opt.SASLUser
+	config.Net.SASL.Password = opt.SASLPassword
+
 	config.Consumer.Return.Errors = true
 	config.Consumer.Offsets.AutoCommit.Enable = opt.Consumer.EnableAutoCommit
 	config.Consumer.Offsets.AutoCommit.Interval = opt.Consumer.AutoCommitInterval
@@ -173,8 +175,8 @@ func newConsumerConfig(opt *Options) (*sarama.Config, error) {
 type consumerHandler struct {
 	consumer *Consumer
 	ready    chan struct{}
-	//logger   *log.NgoLogger
-	opt *Options
+	logger   *logger
+	opt      *Options
 }
 
 // Setup 在启动前执行
@@ -191,7 +193,7 @@ func (ch *consumerHandler) Cleanup(sarama.ConsumerGroupSession) error {
 // ConsumeClaim 在循环中消费message
 func (ch *consumerHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for message := range claim.Messages() {
-		//ch.logger.Tracef("Message claimed: value = %s, timestamp = %v, topic = %s",string(message.Value), message.Timestamp, message.Topic)
+		ch.logger.Sugar().Infof("Message claimed: value = %s, timestamp = %v, topic = %s", string(message.Value), message.Timestamp, message.Topic)
 		ch.listen(session, message)
 	}
 
@@ -224,7 +226,7 @@ func (ch *consumerHandler) listen(session sarama.ConsumerGroupSession, message *
 		}
 		if err != nil {
 			json, _ := json.Marshal(&msg)
-			//log.Errorf("consumer handle error: %v, message: %s", err, json)
+			global.LOGGER.Sugar().Errorf("consumer handle error: %v, message: %s", err, json)
 		}
 		ch.collect(message, time.Since(begin), err)
 	}()

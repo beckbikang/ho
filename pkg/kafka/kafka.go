@@ -16,6 +16,7 @@ package kafka
 
 import (
 	"errors"
+	"ho/pkg/global"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -31,18 +32,24 @@ var (
 )
 
 type Options struct {
-	Name            string
-	Addr            []string
-	Version         string
-	MaxOpenRequests int
-	DialTimeout     time.Duration
-	ReadTimeout     time.Duration
-	WriteTimeout    time.Duration
+	Name            string        //一组配置的名称
+	Addr            []string      //地址
+	Version         string        //版本
+	MaxOpenRequests int           //重试次数
+	DialTimeout     time.Duration //连接超时时间
+	ReadTimeout     time.Duration //读超时时间
+	WriteTimeout    time.Duration //写超时时间
 	Metadata        struct {
-		Retries int
+		Retries int //重试次数
 		Timeout time.Duration
 	}
-	Consumer struct {
+
+	NotNeedProducer bool //生产者不是必须的
+
+	SASLEnable   bool //是否加密
+	SASLUser     string
+	SASLPassword string
+	Consumer     struct {
 		Group              string
 		EnableAutoCommit   bool
 		AutoCommitInterval time.Duration
@@ -106,14 +113,14 @@ func NewDefaultOptions() *Options {
 
 func Init(opts []*Options) error {
 	if len(opts) == 0 {
-		//log.Info("empty kafka config, so skip init")
+		global.LOGGER.Info("empty kafka config, so skip init")
 		return nil
 	}
-	sarama.Logger = New()
+	sarama.Logger = NewLoggerWrapper(global.LOGGER)
 
 	for i := range opts {
 		opt := opts[i]
-		hasProducer := true // TODO default must have a producer
+		hasProducer := !opt.NotNeedProducer
 		hasConsumer := opt.Consumer.Group != ""
 		if err := checkOptions(opt); err != nil {
 			return err
@@ -159,7 +166,7 @@ func GetProducer(name string) *Producer {
 func StopAllConsumers() {
 	for name, consumer := range consumerMap {
 		consumer.Stop()
-		//log.Infof("Stop kafka consumer %s", name)
+		global.LOGGER.Sugar().Infof("Stop kafka consumer %s", name)
 	}
 }
 
@@ -167,7 +174,7 @@ func StopAllConsumers() {
 func StopAllProducers() {
 	for name, producer := range producerMap {
 		producer.Close()
-		//log.Infof("Stop kafka producer %s", name)
+		global.LOGGER.Sugar().Infof("Stop kafka producer %s", name)
 	}
 }
 
@@ -179,5 +186,4 @@ func StopAll() {
 func init() {
 	consumerMap = make(map[string]*Consumer)
 	producerMap = make(map[string]*Producer)
-
 }
