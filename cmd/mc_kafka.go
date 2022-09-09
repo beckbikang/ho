@@ -11,20 +11,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var mcServer = &cobra.Command{
-	Use:   "mc-server",
+var mcCmd = &cobra.Command{
+	Use:   "mc",
+	Short: "运行服务",
+	Long:  "运行服务",
+	Run:   func(cmd *cobra.Command, args []string) {},
+}
+
+var mcKafkaCmd = &cobra.Command{
+	Use:   "kafka",
 	Short: "配置文件",
 	Long:  "配置文件地址",
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("mc to kafka")
 		log.Println("configFilePath:" + configFilePath + " configFileName:" + configFileName)
 		//init config
-		global.InitConfig(mcConfigFilePath, mcConfigFileName)
+		global.InitConfig(configFilePath, configFileName)
 
 		//init server
 		mcServer := memcache.GetMemcacheServer()
-		mcServer.RegisterFunc("set", memcache.DefaultSet)
-		mcServer.RegisterFunc("get", memcache.DefaultGet)
 		mcServer.Start()
 
 		//sign
@@ -43,10 +48,11 @@ var mcServer = &cobra.Command{
 	},
 }
 
-var mcConfigFilePath string
-var mcConfigFileName string
+var configFilePath string
+var configFileName string
 
 func init() {
-	mcServer.Flags().StringVarP(&mcConfigFilePath, "path", "p", "", `配置文件路径`)
-	mcServer.Flags().StringVarP(&mcConfigFileName, "filename", "f", "", `配置文件名称`)
+	mcCmd.AddCommand(mcKafkaCmd)
+	mcKafkaCmd.Flags().StringVarP(&configFilePath, "path", "p", "", `配置文件路径`)
+	mcKafkaCmd.Flags().StringVarP(&configFileName, "filename", "f", "", `配置文件名称`)
 }

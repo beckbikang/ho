@@ -8,10 +8,11 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 var GF *config.GlobalConf
-var LOGGER *logger.Logger
+var LOGGER *zap.Logger
 
 // 全局配置
 var GCONFIG *viper.Viper
@@ -54,5 +55,5 @@ func InitComponents() {
 	//init log
 	lfg := new(logger.LogConfig)
 	lfg.Filename = GCONFIG.GetString("main.MainLogPath")
-	LOGGER = logger.NewLogger(lfg)
+	LOGGER = logger.NewLogger(lfg).GetZlog()
 }

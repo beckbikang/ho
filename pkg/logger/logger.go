@@ -119,6 +119,12 @@ func (l *Logger) initLogger() {
 	zapOptions = append(zapOptions, fields)
 	l.zlogs = zap.New(core, zapOptions...)
 }
+
+func (l *Logger) GetZlog() *zap.Logger {
+	return l.zlogs
+}
+
+/*
 func (l *Logger) Debug(msg string, fields ...zap.Field) {
 	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
 	writerSlice = append(writerSlice, fields...)
@@ -139,6 +145,7 @@ func (l *Logger) Error(msg string, fields ...zap.Field) {
 	writerSlice = append(writerSlice, fields...)
 	l.zlogs.Error(msg, writerSlice...)
 }
+*/
 
 func (l *Logger) setDefaultConfig() {
 	if len(l.logConfig.Timekey) == 0 {

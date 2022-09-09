@@ -1,7 +1,7 @@
 title="mc-to-kafka"
 [main]
 ServerIp="127.0.0.1"
-ServerPort=9191
+ServerPort=9190
 MainLogPath="/tmp/ho.log"
 [kafkas]
     [kafkas.bridgeWrite]
