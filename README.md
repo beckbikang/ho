@@ -9,7 +9,7 @@ features
 ## a simple mc server 
 
 run server like this
-- ./ho mc-server -p /Users/bikang1/Documents/project/project-code/swimming/golang/ho/configs -f config-mc-server.toml
+- ./ho mc-server -p /you config file path/golang/ho/configs -f config-mc-server.toml
 
 connect server
 - telnet 127.0.0.1 9190
