@@ -124,29 +124,6 @@ func (l *Logger) GetZlog() *zap.Logger {
 	return l.zlogs
 }
 
-/*
-func (l *Logger) Debug(msg string, fields ...zap.Field) {
-	writerSlice := []zap.Field{zap.Field(zap.String("level", "debug"))}
-	writerSlice = append(writerSlice, fields...)
-	l.zlogs.Debug(msg, writerSlice...)
-}
-func (l *Logger) Info(msg string, fields ...zap.Field) {
-	writerSlice := []zap.Field{zap.Field(zap.String("level", "info"))}
-	writerSlice = append(writerSlice, fields...)
-	l.zlogs.Info(msg, writerSlice...)
-}
-func (l *Logger) Warn(msg string, fields ...zap.Field) {
-	writerSlice := []zap.Field{zap.Field(zap.String("level", "warn"))}
-	writerSlice = append(writerSlice, fields...)
-	l.zlogs.Warn(msg, writerSlice...)
-}
-func (l *Logger) Error(msg string, fields ...zap.Field) {
-	writerSlice := []zap.Field{zap.Field(zap.String("level", "error"))}
-	writerSlice = append(writerSlice, fields...)
-	l.zlogs.Error(msg, writerSlice...)
-}
-*/
-
 func (l *Logger) setDefaultConfig() {
 	if len(l.logConfig.Timekey) == 0 {
 		l.logConfig.Timekey = TIME_KEY
