@@ -9,14 +9,6 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-var (
-	pid int
-)
-
-func init() {
-	pid = os.Getpid()
-}
-
 const (
 	TIMEFORMAT = "2006-01-02 15-04-05.000"
 )
@@ -67,6 +59,15 @@ type LogKeyConfig struct {
 type LogConfig struct {
 	LogFileConfig
 	LogKeyConfig
+	isMultiFile bool
+}
+
+func WithMultiFile(lfg *LogConfig) *LogConfig {
+	lfg.isMultiFile = true
+	return lfg
+}
+func (lfg *LogConfig) IsMultiFile() bool {
+	return lfg.isMultiFile
 }
 
 type Logger struct {
@@ -75,29 +76,66 @@ type Logger struct {
 }
 
 func NewLogger(lfg *LogConfig) *Logger {
-
 	logger := new(Logger)
 	logger.logConfig = lfg
 	logger.setDefaultConfig()
-	logger.initLogger()
 
+	if lfg.IsMultiFile() {
+		logger.initLoggerMulti()
+	} else {
+		logger.initLogger()
+	}
 	return logger
 }
 
-func (l *Logger) initLogger() {
-
-	lj := l.getLumberjackLog()
-
-	// 设置日志级别
+func (l *Logger) initLoggerMulti() {
 	atomicLevel := zap.NewAtomicLevel()
 	atomicLevel.UnmarshalText([]byte(l.logConfig.Level))
+	// 调试级别
+	debugPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
+		return lev == zap.DebugLevel
+	})
+	// 日志级别
+	infoPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
+		return lev == zap.InfoLevel
+	})
+	// 警告级别
+	warnPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
+		return lev == zap.WarnLevel
+	})
+	// 错误级别
+	errorPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
+		return lev >= zap.ErrorLevel
+	})
+	cores := [...]zapcore.Core{
+		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
+			l.getWriteSyncer(l.logConfig.Filename+".debug.log"), debugPriority),
 
+		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
+			l.getWriteSyncer(l.logConfig.Filename+".info.log"), infoPriority),
+
+		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
+			l.getWriteSyncer(l.logConfig.Filename+".warn.log"), warnPriority),
+
+		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
+			l.getWriteSyncer(l.logConfig.Filename+".error.log"), errorPriority),
+	}
+	zapOptions := make([]zap.Option, 0)
+	zapOptions = append(zapOptions, zap.AddCaller())
+	zapOptions = append(zapOptions, zap.AddCallerSkip(1))
+	zapOptions = append(zapOptions, zap.Development())
+	l.zlogs = zap.New(zapcore.NewTee(cores[:]...), zapOptions...)
+}
+
+func (l *Logger) initLogger() {
 	zws := make([]zapcore.WriteSyncer, 0)
-	zws = append(zws, zapcore.AddSync(lj))
-
+	zws = append(zws, zapcore.AddSync(l.getLumberjackLog(l.logConfig.Filename)))
 	if l.logConfig.LogMod&STDOUT_MODE > 0 {
 		zws = append(zws, zapcore.AddSync(os.Stdout))
 	}
+
+	atomicLevel := zap.NewAtomicLevel()
+	atomicLevel.UnmarshalText([]byte(l.logConfig.Level))
 
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
@@ -106,17 +144,9 @@ func (l *Logger) initLogger() {
 	)
 
 	zapOptions := make([]zap.Option, 0)
-
-	//get aller
-	caller := zap.AddCaller()
-	zapOptions = append(zapOptions, caller)
-
-	development := zap.Development()
-	zapOptions = append(zapOptions, development)
-
-	fields := zap.Fields(zap.Int("pid", pid))
-
-	zapOptions = append(zapOptions, fields)
+	zapOptions = append(zapOptions, zap.AddCaller())
+	zapOptions = append(zapOptions, zap.AddCallerSkip(1))
+	zapOptions = append(zapOptions, zap.Development())
 	l.zlogs = zap.New(core, zapOptions...)
 }
 
@@ -172,18 +202,28 @@ func (l *Logger) getZapEncoderConfig() zapcore.EncoderConfig {
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,  // 小写编码器
 		EncodeTime:     currentTimeEncoder,             // ISO8601 UTC 时间格式
 		EncodeDuration: zapcore.SecondsDurationEncoder, // 时间编码器
-		EncodeCaller:   zapcore.FullCallerEncoder,      // 全路径编码器
+		EncodeCaller:   zapcore.ShortCallerEncoder,     // 全路径编码器
 		EncodeName:     zapcore.FullNameEncoder,        //函数编码
 	}
 }
 
 // get lumber jacklog
-func (l *Logger) getLumberjackLog() *lumberjack.Logger {
+func (l *Logger) getLumberjackLog(fileName string) *lumberjack.Logger {
 	return &lumberjack.Logger{
-		Filename:   l.logConfig.Filename,   // 日志文件路径
+		Filename:   fileName,               // 日志文件路径
 		MaxSize:    l.logConfig.MaxSize,    // 每个日志文件保存的最大尺寸 单位：M
 		MaxBackups: l.logConfig.MaxBackups, // 日志文件最多保存多少个备份
 		MaxAge:     l.logConfig.MaxAge,     // 文件最多保存多少天
 		Compress:   l.logConfig.Compress,   //压缩
 	}
+}
+
+func (l *Logger) getWriteSyncer(fileName string) zapcore.WriteSyncer {
+	lumberjackObj := l.getLumberjackLog(fileName)
+	if l.logConfig.LogMod&STDOUT_MODE > 0 {
+		return zapcore.NewMultiWriteSyncer(
+			zapcore.AddSync(os.Stdout),
+			zapcore.AddSync(lumberjackObj))
+	}
+	return zapcore.AddSync(lumberjackObj)
 }

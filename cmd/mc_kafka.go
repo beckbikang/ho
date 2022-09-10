@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"ho/pkg/global"
+	"ho/pkg/kafka"
 	"ho/pkg/memcache"
 	"log"
 	"os"
@@ -28,8 +29,12 @@ var mcKafkaCmd = &cobra.Command{
 		//init config
 		global.InitConfig(configFilePath, configFileName)
 
+		//init kafka
+		kafka.InitKafka()
+
 		//init server
 		mcServer := memcache.GetMemcacheServer()
+		mcServer.RegisterFunc("set", memcache.McSendToKafka)
 		mcServer.Start()
 
 		//sign
@@ -42,6 +47,7 @@ var mcKafkaCmd = &cobra.Command{
 			case <-signChan: //stop sign
 				global.LOGGER.Info("end")
 				mcServer.Stop()
+				kafka.StopAll()
 				return
 			}
 		}

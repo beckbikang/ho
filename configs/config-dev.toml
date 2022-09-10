@@ -1,13 +1,24 @@
 title="mc-to-kafka"
 [main]
-ServerIp="127.0.0.1"
-ServerPort=9191
-MainLogPath="/tmp/ho.log"
+serverIp="127.0.0.1"
+serverPort=9191
+mainLogPath="/tmp/ho_mc_2_kafka"
+mainLogModel=3 
+
 [kafkas]
-    [kafkas.bridgeWrite]
-    brockers=""
-    topic="common_test"
+    [kafkas.test_mc]
+    brokers=["tt.com:19094"]
+    topic="test_mc"
     group=""
-    user="adBusiness"
+    sslEnable=false
+    user=""
     password=""
-    fromBeginning=false
+    producerOn=true
+    [kafkas.test_mc2]
+    brokers=["tt.com:19094"]
+    topic="test_mc2"
+    group=""
+    sslEnable=false
+    user=""
+    password=""
+    producerOn=true

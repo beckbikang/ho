@@ -11,6 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const GLOBAL_VIP_SLITE = "."
+
 var GF *config.GlobalConf
 var LOGGER *zap.Logger
 
@@ -52,8 +54,14 @@ func InitConfig(configPath, configFileName string) {
 }
 
 func InitComponents() {
-	//init log
+	initLog()
+}
+
+func initLog() {
+	//init main log file
 	lfg := new(logger.LogConfig)
-	lfg.Filename = GCONFIG.GetString("main.MainLogPath")
+	logger.WithMultiFile(lfg)
+	lfg.Filename = GCONFIG.GetString("main.mainLogPath")
+	lfg.LogMod = GF.MainCfg.MainLogModel
 	LOGGER = logger.NewLogger(lfg).GetZlog()
 }
