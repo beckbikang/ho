@@ -62,6 +62,16 @@ mainLogModel=3
 
 
 
+## dependent on
+
+[go-memcache](https://github.com/rpcxio/gomemcached)
+
+[ngo](https://github.com/NetEase-Media/ngo)
+
+
+
+
+
 
 
 
