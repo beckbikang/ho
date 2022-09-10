@@ -7,7 +7,7 @@ mainLogModel=3
 
 [kafkas]
     [kafkas.test_mc]
-    brokers=["tt.com:19094"]
+    brokers=["tt.com:18888"]
     topic="test_mc"
     group=""
     sslEnable=false
@@ -15,7 +15,7 @@ mainLogModel=3
     password=""
     producerOn=true
     [kafkas.test_mc2]
-    brokers=["tt.com:19094"]
+    brokers=["tt.com:18888"]
     topic="test_mc2"
     group=""
     sslEnable=false
