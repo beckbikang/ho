@@ -23,7 +23,8 @@ import (
 )
 
 const (
-	defaultVersion = "2.1.0"
+	// defaultVersion = "2.1.0"// sarama.V0_10_2_1
+	defaultVersion = "0.10.2.1"
 )
 
 var (
@@ -118,6 +119,7 @@ func Init(opts []*Options) error {
 	}
 	sarama.Logger = NewLoggerWrapper(global.LOGGER)
 
+	global.LOGGER.Info("init kafka loop")
 	for i := range opts {
 		opt := opts[i]
 		hasProducer := !opt.NotNeedProducer
@@ -125,21 +127,28 @@ func Init(opts []*Options) error {
 		if err := checkOptions(opt); err != nil {
 			return err
 		}
+		global.LOGGER.Info("start make kafka client or producer")
 		if hasProducer {
 			p, err := NewProducer(opt)
+
 			if err != nil {
+				global.LOGGER.Sugar().Errorf("NewProducer:error:%v", err)
 				return err
 			}
+			global.LOGGER.Sugar().Infof("NewProducer:%v", *p)
 			producerMap[opt.Name] = p
 		}
 		if hasConsumer {
 			c, err := NewConsumer(opt)
 			if err != nil {
+				global.LOGGER.Sugar().Errorf("NewConsumer:error:%v", err)
 				return err
 			}
+			global.LOGGER.Sugar().Infof("NewConsumer:%v", *c)
 			consumerMap[opt.Name] = c
 		}
 	}
+
 	return nil
 }
 

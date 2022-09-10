@@ -3,11 +3,5 @@ title="mc-to-kafka"
 ServerIp="127.0.0.1"
 ServerPort=9190
 MainLogPath="/tmp/ho.log"
+MainLogModel=3 
 [kafkas]
-    [kafkas.bridgeWrite]
-    brockers=""
-    topic="common_test"
-    group=""
-    user="adBusiness"
-    password=""
-    fromBeginning=false

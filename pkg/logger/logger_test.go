@@ -10,15 +10,16 @@ import (
 func TestDebug(t *testing.T) {
 
 	lfg := new(LogConfig)
-	lfg.Filename = "/tmp/test.log"
+	lfg.Filename = "/tmp/xxx"
+	//WithMultiFile(lfg)
 	logger := NewLogger(lfg)
 
 	logger.GetZlog().Info("test")
-	logger.GetZlog().Info("abc", zap.Int("int", 11))
 
-	logger.GetZlog().Info("test122131")
-
-	logger.zlogs.Sugar().Info("ttttt")
+	logger.GetZlog().Debug("test122131", zap.Int("int", 11))
+	logger.GetZlog().Info("test122131", zap.Int("int", 11))
+	logger.GetZlog().Warn("test122131", zap.Int("int", 11))
+	logger.GetZlog().Debug("test122131", zap.Int("int", 11))
 }
 
 // go test -bench=. -v

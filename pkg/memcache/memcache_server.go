@@ -3,20 +3,10 @@ package memcache
 import (
 	"context"
 	"ho/pkg/global"
-	"strconv"
-	"sync"
 
 	mc "github.com/rpcxio/gomemcached"
 	"go.uber.org/zap"
 )
-
-var memStore sync.Map
-
-func GetMemcacheServer() *mc.Server {
-	addr := global.GCONFIG.GetString("main.ServerIp") + ":" + strconv.Itoa(global.GCONFIG.GetInt("main.ServerPort"))
-	mcServer := mc.NewServer(addr)
-	return mcServer
-}
 
 func DefaultSet(ctx context.Context, req *mc.Request, res *mc.Response) error {
 	key := req.Key
