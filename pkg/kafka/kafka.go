@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	// defaultVersion = "2.1.0"// sarama.V0_10_2_1
+	//defaultVersion = "2.1.0" // sarama.V0_10_2_1
 	defaultVersion = "0.10.2.1"
 )
 

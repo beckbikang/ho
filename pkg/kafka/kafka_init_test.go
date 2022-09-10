@@ -16,7 +16,7 @@ func TestInitKafka(t *testing.T) {
 	kafkaMap := global.GCONFIG.GetStringMap(KAFKA_KEY_NAME)
 	log.Printf("kafkaMap:+%v", kafkaMap)
 
-	brockersList := global.GCONFIG.GetStringSlice("kafkas.xmeta.brokers")
+	brockersList := global.GCONFIG.GetStringSlice("kafkas.test_mc.brokers")
 	log.Printf("######Brokers %v", brockersList)
 
 	err := InitKafka()
@@ -25,11 +25,11 @@ func TestInitKafka(t *testing.T) {
 	}
 
 	//init data
-	proudcer1 := GetProducer("xmeta")
+	proudcer1 := GetProducer("test_mc")
 	defer proudcer1.Close()
 
 	//sync send data
-	topicName := global.GCONFIG.GetString("kafkas.xmeta.topic")
+	topicName := global.GCONFIG.GetString("kafkas.test_mc.topic")
 	log.Printf("send to topic %s", topicName)
 	proudcer1.SyncSend(topicName, "{\"ho\":1}")
 

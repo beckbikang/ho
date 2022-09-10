@@ -78,6 +78,8 @@ type Logger struct {
 func NewLogger(lfg *LogConfig) *Logger {
 	logger := new(Logger)
 	logger.logConfig = lfg
+	logger.setDefaultConfig()
+
 	if lfg.IsMultiFile() {
 		logger.initLoggerMulti()
 	} else {
@@ -118,24 +120,22 @@ func (l *Logger) initLoggerMulti() {
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
 			l.getWriteSyncer(l.logConfig.Filename+".error.log"), errorPriority),
 	}
-	l.zlogs = zap.New(zapcore.NewTee(cores[:]...))
-	l.zlogs.WithOptions(zap.AddCaller())
-	l.zlogs.WithOptions(zap.Development())
+	zapOptions := make([]zap.Option, 0)
+	zapOptions = append(zapOptions, zap.AddCaller())
+	zapOptions = append(zapOptions, zap.AddCallerSkip(1))
+	zapOptions = append(zapOptions, zap.Development())
+	l.zlogs = zap.New(zapcore.NewTee(cores[:]...), zapOptions...)
 }
 
 func (l *Logger) initLogger() {
-
-	// 设置日志级别
-	atomicLevel := zap.NewAtomicLevel()
-	atomicLevel.UnmarshalText([]byte(l.logConfig.Level))
-
-	lj := l.getLumberjackLog(l.logConfig.Filename)
 	zws := make([]zapcore.WriteSyncer, 0)
-	zws = append(zws, zapcore.AddSync(lj))
-
+	zws = append(zws, zapcore.AddSync(l.getLumberjackLog(l.logConfig.Filename)))
 	if l.logConfig.LogMod&STDOUT_MODE > 0 {
 		zws = append(zws, zapcore.AddSync(os.Stdout))
 	}
+
+	atomicLevel := zap.NewAtomicLevel()
+	atomicLevel.UnmarshalText([]byte(l.logConfig.Level))
 
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
@@ -144,13 +144,9 @@ func (l *Logger) initLogger() {
 	)
 
 	zapOptions := make([]zap.Option, 0)
-
-	//get aller
-	caller := zap.AddCaller()
-	zapOptions = append(zapOptions, caller)
-
-	development := zap.Development()
-	zapOptions = append(zapOptions, development)
+	zapOptions = append(zapOptions, zap.AddCaller())
+	zapOptions = append(zapOptions, zap.AddCallerSkip(1))
+	zapOptions = append(zapOptions, zap.Development())
 	l.zlogs = zap.New(core, zapOptions...)
 }
 
@@ -206,7 +202,7 @@ func (l *Logger) getZapEncoderConfig() zapcore.EncoderConfig {
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,  // 小写编码器
 		EncodeTime:     currentTimeEncoder,             // ISO8601 UTC 时间格式
 		EncodeDuration: zapcore.SecondsDurationEncoder, // 时间编码器
-		EncodeCaller:   zapcore.FullCallerEncoder,      // 全路径编码器
+		EncodeCaller:   zapcore.ShortCallerEncoder,     // 全路径编码器
 		EncodeName:     zapcore.FullNameEncoder,        //函数编码
 	}
 }

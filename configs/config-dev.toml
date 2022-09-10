@@ -2,11 +2,11 @@ title="mc-to-kafka"
 [main]
 serverIp="127.0.0.1"
 serverPort=9191
-mainLogPath="/tmp/ho.log"
+mainLogPath="/tmp/ho_mc_2_kafka"
 mainLogModel=3 
 
 [kafkas]
-    [kafkas.xmeta]
+    [kafkas.test_mc]
     brokers=["tt.com:19094"]
     topic="test_mc"
     group=""
@@ -14,7 +14,7 @@ mainLogModel=3
     user=""
     password=""
     producerOn=true
-    [kafkas.xdata]
+    [kafkas.test_mc2]
     brokers=["tt.com:19094"]
     topic="test_mc2"
     group=""

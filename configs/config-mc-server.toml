@@ -2,6 +2,6 @@ title="mc-to-kafka"
 [main]
 ServerIp="127.0.0.1"
 ServerPort=9190
-MainLogPath="/tmp/ho.log"
+MainLogPath="/tmp/ho_mc_server"
 MainLogModel=3 
 [kafkas]
