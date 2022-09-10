@@ -11,6 +11,7 @@ import (
 
 const (
 	TIMEFORMAT = "2006-01-02 15-04-05.000"
+	LOG_EXT    = ".log"
 )
 const (
 	//logmod 默认是 1 文件  2 stdout 4 其他
@@ -109,16 +110,16 @@ func (l *Logger) initLoggerMulti() {
 	})
 	cores := [...]zapcore.Core{
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
-			l.getWriteSyncer(l.logConfig.Filename+".debug.log"), debugPriority),
+			l.getWriteSyncer(l.logConfig.Filename+".debug"+LOG_EXT), debugPriority),
 
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
-			l.getWriteSyncer(l.logConfig.Filename+".info.log"), infoPriority),
+			l.getWriteSyncer(l.logConfig.Filename+".info"+LOG_EXT), infoPriority),
 
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
-			l.getWriteSyncer(l.logConfig.Filename+".warn.log"), warnPriority),
+			l.getWriteSyncer(l.logConfig.Filename+".warn"+LOG_EXT), warnPriority),
 
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
-			l.getWriteSyncer(l.logConfig.Filename+".error.log"), errorPriority),
+			l.getWriteSyncer(l.logConfig.Filename+".error"+LOG_EXT), errorPriority),
 	}
 	zapOptions := make([]zap.Option, 0)
 	zapOptions = append(zapOptions, zap.AddCaller())
@@ -129,7 +130,7 @@ func (l *Logger) initLoggerMulti() {
 
 func (l *Logger) initLogger() {
 	zws := make([]zapcore.WriteSyncer, 0)
-	zws = append(zws, zapcore.AddSync(l.getLumberjackLog(l.logConfig.Filename)))
+	zws = append(zws, zapcore.AddSync(l.getLumberjackLog(l.logConfig.Filename+LOG_EXT)))
 	if l.logConfig.LogMod&STDOUT_MODE > 0 {
 		zws = append(zws, zapcore.AddSync(os.Stdout))
 	}
