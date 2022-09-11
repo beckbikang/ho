@@ -8,13 +8,12 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
 )
 
 const GLOBAL_VIP_SLITE = "."
 
 var GF *config.GlobalConf
-var LOGGER *zap.Logger
+var LOGGER *logger.Logger
 
 // 全局配置
 var GCONFIG *viper.Viper
@@ -63,5 +62,5 @@ func initLog() {
 	logger.WithMultiFile(lfg)
 	lfg.Filename = GCONFIG.GetString("main.mainLogPath")
 	lfg.LogMod = GF.MainCfg.MainLogModel
-	LOGGER = logger.NewLogger(lfg).GetZlog()
+	LOGGER = logger.NewLogger(lfg)
 }

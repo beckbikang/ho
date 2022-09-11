@@ -128,6 +128,36 @@ func (l *Logger) initLoggerMulti() {
 	l.zlogs = zap.New(zapcore.NewTee(cores[:]...), zapOptions...)
 }
 
+func (l *Logger) Sugar() *zap.SugaredLogger {
+	return l.zlogs.Sugar()
+}
+
+func (l *Logger) Debug(msg string, fields ...zap.Field) {
+	l.zlogs.Debug(msg, fields...)
+}
+
+func (l *Logger) Info(msg string, fields ...zap.Field) {
+	l.zlogs.Info(msg, fields...)
+}
+
+func (l *Logger) Warn(msg string, fields ...zap.Field) {
+	l.zlogs.Warn(msg, fields...)
+}
+
+func (l *Logger) Error(msg string, fields ...zap.Field) {
+	l.zlogs.Error(msg, fields...)
+}
+
+func (l *Logger) Print(v ...interface{}) {
+	l.zlogs.Sugar().Info(v...)
+}
+func (l *Logger) Printf(format string, v ...interface{}) {
+	l.zlogs.Sugar().Infof(format, v)
+}
+func (l *Logger) Println(v ...interface{}) {
+	l.zlogs.Sugar().Info(v...)
+}
+
 func (l *Logger) initLogger() {
 	zws := make([]zapcore.WriteSyncer, 0)
 	zws = append(zws, zapcore.AddSync(l.getLumberjackLog(l.logConfig.Filename+LOG_EXT)))
