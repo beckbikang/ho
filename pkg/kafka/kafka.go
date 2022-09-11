@@ -117,7 +117,7 @@ func Init(opts []*Options) error {
 		global.LOGGER.Info("empty kafka config, so skip init")
 		return nil
 	}
-	sarama.Logger = NewLoggerWrapper(global.LOGGER)
+	sarama.Logger = global.LOGGER
 
 	global.LOGGER.Info("init kafka loop")
 	for i := range opts {

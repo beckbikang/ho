@@ -17,6 +17,7 @@ package kafka
 import (
 	"errors"
 	"ho/pkg/global"
+	"ho/pkg/logger"
 	"sync"
 	"time"
 
@@ -40,7 +41,7 @@ type RecordMetadata struct {
 type Producer struct {
 	client  sarama.AsyncProducer
 	opt     Options
-	logger  *logger
+	logger  *logger.Logger
 	runChan chan struct{}
 	wg      sync.WaitGroup
 }
@@ -186,7 +187,7 @@ func NewProducer(opt *Options) (*Producer, error) {
 
 	producer := &Producer{
 		client:  p,
-		logger:  NewLoggerWrapper(global.LOGGER),
+		logger:  global.LOGGER,
 		opt:     *opt,
 		runChan: make(chan struct{}),
 	}

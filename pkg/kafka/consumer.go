@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"ho/pkg/global"
+	"ho/pkg/logger"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -39,7 +40,7 @@ type Listener interface {
 // Consumer 是一个group的消费者
 type Consumer struct {
 	client    sarama.ConsumerGroup
-	logger    *logger
+	logger    *logger.Logger
 	opt       Options
 	ctx       context.Context
 	cancel    func()
@@ -129,7 +130,7 @@ func NewConsumer(opt *Options) (*Consumer, error) {
 	}
 	return &Consumer{
 		client:    c,
-		logger:    NewLoggerWrapper(global.LOGGER),
+		logger:    global.LOGGER,
 		opt:       *opt,
 		listeners: make(map[string]Listener, 8),
 	}, nil
@@ -175,7 +176,7 @@ func newConsumerConfig(opt *Options) (*sarama.Config, error) {
 type consumerHandler struct {
 	consumer *Consumer
 	ready    chan struct{}
-	logger   *logger
+	logger   *logger.Logger
 	opt      *Options
 }
 

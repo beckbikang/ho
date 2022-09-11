@@ -11,6 +11,7 @@ import (
 
 const (
 	TIMEFORMAT = "2006-01-02 15-04-05.000"
+	LOG_EXT    = ".log"
 )
 const (
 	//logmod 默认是 1 文件  2 stdout 4 其他
@@ -109,16 +110,16 @@ func (l *Logger) initLoggerMulti() {
 	})
 	cores := [...]zapcore.Core{
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
-			l.getWriteSyncer(l.logConfig.Filename+".debug.log"), debugPriority),
+			l.getWriteSyncer(l.logConfig.Filename+".debug"+LOG_EXT), debugPriority),
 
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
-			l.getWriteSyncer(l.logConfig.Filename+".info.log"), infoPriority),
+			l.getWriteSyncer(l.logConfig.Filename+".info"+LOG_EXT), infoPriority),
 
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
-			l.getWriteSyncer(l.logConfig.Filename+".warn.log"), warnPriority),
+			l.getWriteSyncer(l.logConfig.Filename+".warn"+LOG_EXT), warnPriority),
 
 		zapcore.NewCore(zapcore.NewJSONEncoder(l.getZapEncoderConfig()),
-			l.getWriteSyncer(l.logConfig.Filename+".error.log"), errorPriority),
+			l.getWriteSyncer(l.logConfig.Filename+".error"+LOG_EXT), errorPriority),
 	}
 	zapOptions := make([]zap.Option, 0)
 	zapOptions = append(zapOptions, zap.AddCaller())
@@ -127,9 +128,39 @@ func (l *Logger) initLoggerMulti() {
 	l.zlogs = zap.New(zapcore.NewTee(cores[:]...), zapOptions...)
 }
 
+func (l *Logger) Sugar() *zap.SugaredLogger {
+	return l.zlogs.Sugar()
+}
+
+func (l *Logger) Debug(msg string, fields ...zap.Field) {
+	l.zlogs.Debug(msg, fields...)
+}
+
+func (l *Logger) Info(msg string, fields ...zap.Field) {
+	l.zlogs.Info(msg, fields...)
+}
+
+func (l *Logger) Warn(msg string, fields ...zap.Field) {
+	l.zlogs.Warn(msg, fields...)
+}
+
+func (l *Logger) Error(msg string, fields ...zap.Field) {
+	l.zlogs.Error(msg, fields...)
+}
+
+func (l *Logger) Print(v ...interface{}) {
+	l.zlogs.Sugar().Info(v...)
+}
+func (l *Logger) Printf(format string, v ...interface{}) {
+	l.zlogs.Sugar().Infof(format, v)
+}
+func (l *Logger) Println(v ...interface{}) {
+	l.zlogs.Sugar().Info(v...)
+}
+
 func (l *Logger) initLogger() {
 	zws := make([]zapcore.WriteSyncer, 0)
-	zws = append(zws, zapcore.AddSync(l.getLumberjackLog(l.logConfig.Filename)))
+	zws = append(zws, zapcore.AddSync(l.getLumberjackLog(l.logConfig.Filename+LOG_EXT)))
 	if l.logConfig.LogMod&STDOUT_MODE > 0 {
 		zws = append(zws, zapcore.AddSync(os.Stdout))
 	}
