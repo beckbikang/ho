@@ -66,9 +66,11 @@ mainLogModel=3
 
 ## dependent on
 
-[go-memcache](https://github.com/rpcxio/gomemcached)
+a memmcache server: [go-memcache](https://github.com/rpcxio/gomemcached)
 
-[ngo](https://github.com/NetEase-Media/ngo)
+a common framework: [ngo](https://github.com/NetEase-Media/ngo)
+
+a redis server:[redcon](https://github.com/tidwall/redcon)
 
 
 
