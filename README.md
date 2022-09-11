@@ -3,6 +3,8 @@
 features
 - ✅ a simple mc server use [library](https://github.com/rpcxio/gomemcached)
 - ✅ write data into  kafka which use  mc protocol. 
+- trans data from kafka to kafka
+- write data into  kafka which use  redis protocol. 
 
 
 
