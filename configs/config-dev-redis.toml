@@ -1,0 +1,24 @@
+title="mc-to-kafka"
+[main]
+serverIp="127.0.0.1"
+serverPort=9192
+mainLogPath="/tmp/ho_redis_2_kafka"
+mainLogModel=3 
+
+[kafkas]
+    [kafkas.test_mc]
+    brokers=["tt.com:19094"]
+    topic="test_mc"
+    group=""
+    sslEnable=false
+    user=""
+    password=""
+    producerOn=true
+    [kafkas.test_mc2]
+    brokers=["tt.com:18888"]
+    topic="test_mc2"
+    group=""
+    sslEnable=false
+    user=""
+    password=""
+    producerOn=true

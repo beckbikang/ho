@@ -17,4 +17,5 @@ func Execute() error {
 func init() {
 	rootCmd.AddCommand(mcCmd)
 	rootCmd.AddCommand(mcServer)
+	rootCmd.AddCommand(redisCmd)
 }
