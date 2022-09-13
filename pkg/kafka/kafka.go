@@ -196,3 +196,16 @@ func init() {
 	consumerMap = make(map[string]*Consumer)
 	producerMap = make(map[string]*Producer)
 }
+
+func SendTokafka(key, value string) {
+	kafkaProduce := GetProducer(key)
+	if kafkaProduce != nil {
+		kafkaProduce.Send(key, value, func(meta *RecordMetadata, err error) {
+			if err != nil {
+				global.LOGGER.Sugar().Errorf("error:%v", err)
+			} else {
+				global.LOGGER.Sugar().Info(meta)
+			}
+		})
+	}
+}

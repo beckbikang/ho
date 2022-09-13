@@ -8,6 +8,7 @@ require (
 	github.com/rpcxio/gomemcached v0.0.0-20220104073900-7e360ae9b506
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.13.0
+	github.com/tidwall/redcon v1.6.0
 	go.uber.org/zap v1.23.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
@@ -41,6 +42,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
+	github.com/tidwall/btree v1.1.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
