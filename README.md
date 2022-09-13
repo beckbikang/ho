@@ -27,7 +27,7 @@ get data
 ##  mc send to kafka
 
 connect server
-- telnet 127.0.0.1 9190
+- telnet 127.0.0.1 9191
 
 set data 
 - set topic_name 0 1200 3
