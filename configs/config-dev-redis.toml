@@ -1,4 +1,4 @@
-title="mc-to-kafka"
+title="redis-to-kafka"
 [main]
 serverIp="127.0.0.1"
 serverPort=9192
