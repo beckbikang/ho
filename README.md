@@ -64,6 +64,7 @@ mainLogModel=3
 
 ```
 
+./ho mc kafka -p /xxx/golang/ho/configs -f config-dev.toml
 
 
 kafka consume result:
@@ -113,6 +114,11 @@ mainLogModel=3
     producerOn=true
 ```
 
+run server
+
+./ho redis kafka -p /xxxx/golang/ho/configs -f config-dev-redis.toml
+
+
 kafka consume result:
 
 <img width="511" alt="image" src="https://user-images.githubusercontent.com/7270440/189933129-2792d1f2-0894-4a4c-b0f2-92ccfb23f235.png">
@@ -153,7 +159,7 @@ showSaramaDebug=true
 2. run server
 
 ```
-./ho kafka -p /Users/bikang1/Documents/project/project-code/swimming/golang/ho/configs -f config-dev-kafka-2kafka.toml -r test_mc -t test_mc2
+./ho kafka -p /you config file path/golang/ho/configs -f config-dev-kafka-2kafka.toml -r test_mc -t test_mc2
 ```
 
 
