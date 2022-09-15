@@ -4,7 +4,9 @@ features
 - ✅ a simple mc server use [library](https://github.com/rpcxio/gomemcached)
 - ✅ write data into  kafka which use  mc protocol. 
 - ✅ write data into  kafka which use  redis protocol. 
-- trans data from kafka to kafka
+- ✅ trans data from kafka to kafka
+- trans kafka to elasticsearch
+
 
 
 
@@ -115,6 +117,44 @@ kafka consume result:
 
 <img width="511" alt="image" src="https://user-images.githubusercontent.com/7270440/189933129-2792d1f2-0894-4a4c-b0f2-92ccfb23f235.png">
 
+
+
+## kafka to kafka
+
+1. simple config 
+
+```toml
+title="kafka-to-kafka"
+[main]
+serverIp="127.0.0.1"
+serverPort=9193
+mainLogPath="/tmp/ho_kafka_2_kafka"
+mainLogModel=3
+showSaramaDebug=true
+[kafkas]
+    [kafkas.test_mc]
+    brokers=["tt.com:18888"]
+    topic="test_mc"
+    group="test"
+    sslEnable=false
+    user=""
+    password=""
+    producerOn=false
+    [kafkas.test_mc2]
+    brokers=["tt.com:18888"]
+    topic="test_mc2"
+    group=""
+    sslEnable=false
+    user=""
+    password=""
+    producerOn=true
+```
+
+2. run server
+
+```
+./ho kafka -p /Users/bikang1/Documents/project/project-code/swimming/golang/ho/configs -f config-dev-kafka-2kafka.toml -r test_mc -t test_mc2
+```
 
 
 
