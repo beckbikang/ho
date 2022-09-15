@@ -4,7 +4,7 @@ serverIp="127.0.0.1"
 serverPort=9191
 mainLogPath="/tmp/ho_mc_2_kafka"
 mainLogModel=3 
-
+showSaramaDebug=true
 [kafkas]
     [kafkas.test_mc]
     brokers=["tt.com:18888"]

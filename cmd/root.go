@@ -18,4 +18,5 @@ func init() {
 	rootCmd.AddCommand(mcCmd)
 	rootCmd.AddCommand(mcServer)
 	rootCmd.AddCommand(redisCmd)
+	rootCmd.AddCommand(kafkaToKafkaCmd)
 }
