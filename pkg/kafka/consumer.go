@@ -255,3 +255,11 @@ func (a *Acknowledgment) Acknowledge() {
 		a.session.Commit()
 	}
 }
+
+type ListenerObj struct {
+	ListenFn func(message ConsumerMessage, ack *Acknowledgment)
+}
+
+func (l *ListenerObj) Listen(message ConsumerMessage, ack *Acknowledgment) {
+	l.ListenFn(message, ack)
+}

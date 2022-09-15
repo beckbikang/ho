@@ -45,6 +45,7 @@ type Options struct {
 		Timeout time.Duration
 	}
 
+	ShowSaramaDebug bool
 	NotNeedProducer bool //生产者不是必须的
 
 	SASLEnable   bool //是否加密
@@ -85,6 +86,7 @@ func NewDefaultOptionsSlice(size int) []*Options {
 func NewDefaultOptions() *Options {
 	opt := &Options{}
 	opt.Version = defaultVersion
+	opt.ShowSaramaDebug = false
 	opt.MaxOpenRequests = 5
 	opt.DialTimeout = time.Second * 30
 	opt.ReadTimeout = time.Second * 30
@@ -117,7 +119,10 @@ func Init(opts []*Options) error {
 		global.LOGGER.Info("empty kafka config, so skip init")
 		return nil
 	}
-	sarama.Logger = global.LOGGER
+
+	if global.GCONFIG.GetBool("main.showSaramaDebug") {
+		sarama.Logger = global.LOGGER
+	}
 
 	global.LOGGER.Info("init kafka loop")
 	for i := range opts {
@@ -207,5 +212,7 @@ func SendTokafka(key, value string) {
 				global.LOGGER.Sugar().Info(meta)
 			}
 		})
+	} else {
+		global.LOGGER.Sugar().Errorf("topic %s not exist", key)
 	}
 }

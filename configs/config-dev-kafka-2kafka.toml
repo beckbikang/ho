@@ -1,19 +1,19 @@
-title="redis-to-kafka"
+title="kafka-to-kafka"
 [main]
 serverIp="127.0.0.1"
-serverPort=9192
-mainLogPath="/tmp/ho_redis_2_kafka"
-mainLogModel=3 
+serverPort=9193
+mainLogPath="/tmp/ho_kafka_2_kafka"
+mainLogModel=3
 showSaramaDebug=true
 [kafkas]
     [kafkas.test_mc]
     brokers=["tt.com:18888"]
     topic="test_mc"
-    group=""
+    group="test"
     sslEnable=false
     user=""
     password=""
-    producerOn=true
+    producerOn=false
     [kafkas.test_mc2]
     brokers=["tt.com:18888"]
     topic="test_mc2"

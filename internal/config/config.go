@@ -7,10 +7,11 @@ type GlobalConf struct {
 }
 
 type MainConf struct {
-	ServerIp     int  `toml:"serverIp"`
-	ServerPort   int  `toml:"serverPort"`
-	MainLogPath  int  `toml:"mainLogPath"`
-	MainLogModel int8 `toml:"mainLogModel"`
+	ServerIp        int  `toml:"serverIp"`
+	ServerPort      int  `toml:"serverPort"`
+	MainLogPath     int  `toml:"mainLogPath"`
+	MainLogModel    int8 `toml:"mainLogModel"`
+	ShowSaramaDebug bool `toml:"showSaramaDebug"`
 }
 
 type KafkaConfig struct {

@@ -3,5 +3,6 @@ title="mc-to-kafka"
 ServerIp="127.0.0.1"
 ServerPort=9190
 MainLogPath="/tmp/ho_mc_server"
-MainLogModel=3 
+MainLogModel=3
+showSaramaDebug=true
 [kafkas]
