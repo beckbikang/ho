@@ -1,12 +1,11 @@
 # ho
 
 features
-- ✅ a simple mc server use [library](https://github.com/rpcxio/gomemcached)
+- ✅ a simple mc server use this [library](https://github.com/rpcxio/gomemcached)
 - ✅ write data into  kafka which use  mc protocol. 
 - ✅ write data into  kafka which use  redis protocol. 
 - ✅ trans data from kafka to kafka
 - trans kafka to elasticsearch
-
 
 
 
@@ -27,6 +26,9 @@ get data
 <img width="363" alt="image" src="https://user-images.githubusercontent.com/7270440/189366315-3353ae47-4799-49d2-882a-f6fe14df5b98.png">
 
 ##  mc send to kafka
+
+run server
+./ho mc kafka -p /xxx/golang/ho/configs -f config-dev.toml
 
 connect server
 - telnet 127.0.0.1 9191
@@ -64,7 +66,6 @@ mainLogModel=3
 
 ```
 
-./ho mc kafka -p /xxx/golang/ho/configs -f config-dev.toml
 
 
 kafka consume result:
@@ -74,6 +75,11 @@ kafka consume result:
 
 
 ##  redis send to kafka
+
+run server
+
+./ho redis kafka -p /xxxx/golang/ho/configs -f config-dev-redis.toml
+
 
 connect server
 - telnet 127.0.0.1 9192
@@ -113,10 +119,6 @@ mainLogModel=3
     password=""
     producerOn=true
 ```
-
-run server
-
-./ho redis kafka -p /xxxx/golang/ho/configs -f config-dev-redis.toml
 
 
 kafka consume result:
@@ -161,6 +163,9 @@ showSaramaDebug=true
 ```
 ./ho kafka -p /you config file path/golang/ho/configs -f config-dev-kafka-2kafka.toml -r test_mc -t test_mc2
 ```
+
+3. push data into kafka
+
 
 
 
